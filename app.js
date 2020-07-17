@@ -1,6 +1,6 @@
 const RED_CELL = 0;
 const GREEN_CELL = 1;
-
+let greenGenerations = 0;
 //Hard coded 2D array for test
 
 let matrix = [
@@ -9,18 +9,37 @@ let matrix = [
    [0, 0, 0],
 ];
 
-for (let row = 0; row < matrix.length; row++) {
-   for (let column = 0; column < matrix[row].length; column++) {
-      const neighbors = findAllNeighbors(matrix, row, column);
-      const greenNeighbors = getSumOfEqualCells(neighbors, GREEN_CELL);
-      const redNeighbors = getSumOfEqualCells(neighbors, RED_CELL);
-      const currentCell = matrix[row][column];
-      const nextGenerationCell = createNextGeneration(
-         currentCell,
-         greenNeighbors,
-         redNeighbors
-      );
+let newMatrix = [
+   [0, 0, 0],
+   [0, 0, 0],
+   [0, 0, 0],
+];
+
+for (let index = 0; index < 10; index++) {
+   for (let row = 0; row < matrix.length; row++) {
+      for (let column = 0; column < matrix[row].length; column++) {
+         const neighbors = findAllNeighbors(matrix, row, column);
+         const greenNeighbors = getSumOfEqualCells(neighbors, GREEN_CELL);
+         const redNeighbors = getSumOfEqualCells(neighbors, RED_CELL);
+         const currentCell = matrix[row][column];
+         const nextGenerationCell = createNextGeneration(
+            currentCell,
+            greenNeighbors,
+            redNeighbors
+         );
+         newMatrix[row][column] = nextGenerationCell;
+         if (row === 0 && column === 1 && nextGenerationCell === GREEN_CELL) {
+            greenGenerations++;
+         }
+      }
    }
+
+   matrix = newMatrix;
+   newMatrix = [
+      [0, 0, 0],
+      [0, 0, 0],
+      [0, 0, 0],
+   ];
 }
 
 function findAllNeighbors(matrix, row, column) {
