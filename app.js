@@ -12,6 +12,14 @@ let matrix = [
 for (let row = 0; row < matrix.length; row++) {
    for (let column = 0; column < matrix[row].length; column++) {
       const neighbors = findAllNeighbors(matrix, row, column);
+      const greenNeighbors = getSumOfEqualCells(neighbors, GREEN_CELL);
+      const redNeighbors = getSumOfEqualCells(neighbors, RED_CELL);
+      const currentCell = matrix[row][column];
+      const nextGenerationCell = createNextGeneration(
+         currentCell,
+         greenNeighbors,
+         redNeighbors
+      );
    }
 }
 
@@ -33,4 +41,22 @@ function findAllNeighbors(matrix, row, column) {
       } catch (err) {}
    });
    return allPosibleValues.filter((value) => value != undefined);
+}
+
+function getSumOfEqualCells(array, cellType) {
+   return array.filter((value) => value === cellType).length;
+}
+
+function createNextGeneration(cell, greens, reds) {
+   if (cell === RED_CELL) {
+      if (greens === 3 || greens === 6) {
+         return GREEN_CELL;
+      }
+      return RED_CELL;
+   } else {
+      if (greens === 2 || greens === 3 || greens === 6) {
+         return GREEN_CELL;
+      }
+      return RED_CELL;
+   }
 }
