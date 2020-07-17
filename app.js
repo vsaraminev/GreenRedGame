@@ -12,35 +12,32 @@ const questions = [
    'Coordinates and number N:',
 ];
 
-//Hard coded 2D array for test
+const OUTPUT_MESSAGE = 'Expected result: ';
 
-let matrix = [
-   [0, 0, 0],
-   [1, 1, 1],
-   [0, 0, 0],
-];
+let matrix = [];
 
-let newMatrix = [
-   [0, 0, 0],
-   [0, 0, 0],
-   [0, 0, 0],
-];
+let newMatrix;
 
 start();
 
 async function start() {
-   const grid = await ask(questions[0]);
-   const numbers = grid.split(',');
-   const width = Number(numbers[0]);
-   const heigh = Number(numbers[1]);
-   let arr = [];
+   const gridInput = await ask(questions[0]);
+   const gridArgs = gridInput.split(',');
+   const width = Number(gridArgs[0]);
+   const heigh = Number(gridArgs[1]);
    for (let index = 0; index < heigh; index++) {
-      let result = await ask(questions[1]);
-      arr.push(result);
+      const result = await ask(questions[1]);
+      const numbers = result.split('').map(Number);
+      matrix.push(numbers);
    }
-   let coordinates = await ask(questions[2]);
+   newMatrix = createEmptyMatrix(width, heigh);
+   const coordinatesInput = await ask(questions[2]);
+   const coordArgs = coordinatesInput.split(',');
+   const x1 = Number(coordArgs[0]);
+   const y1 = Number(coordArgs[1]);
+   const iterations = Number(coordArgs[2]);
 
-   for (let index = 0; index < 10; index++) {
+   for (let index = 0; index < iterations; index++) {
       for (let row = 0; row < matrix.length; row++) {
          for (let column = 0; column < matrix[row].length; column++) {
             const neighbors = findAllNeighbors(matrix, row, column);
@@ -54,23 +51,32 @@ async function start() {
             );
             newMatrix[row][column] = nextGenerationCell;
             if (
-               row === 0 &&
-               column === 1 &&
+               row === x1 &&
+               column === y1 &&
                nextGenerationCell === GREEN_CELL
             ) {
                greenGenerations++;
             }
          }
       }
-
       matrix = newMatrix;
-      newMatrix = [
-         [0, 0, 0],
-         [0, 0, 0],
-         [0, 0, 0],
-      ];
+      newMatrix = createEmptyMatrix(width, heigh);
    }
+   console.log(`${OUTPUT_MESSAGE}${greenGenerations}`);
+
    process.exit();
+}
+
+function createEmptyMatrix(length) {
+   var arr = new Array(length || 0),
+      i = length;
+
+   if (arguments.length > 1) {
+      var args = Array.prototype.slice.call(arguments, 1);
+      while (i--) arr[length - 1 - i] = createEmptyMatrix.apply(this, args);
+   }
+
+   return arr;
 }
 
 function findAllNeighbors(matrix, row, column) {
