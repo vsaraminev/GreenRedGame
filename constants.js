@@ -10,7 +10,7 @@ const ERROR_MESSAGES = Object.freeze({
    HEIGHT: 'Heigh should be greated or equal to the width',
    NEGATIVE_NUMBERS: 'Parameters should not be negative numbers',
    ALLOWED_CHARACTERS: 'Allowed characters are only 0 and 1',
-   CHAR_COUNT: `The number of characters is more than allowed`,
+   CHAR_COUNT: `The number of characters is different than allowed`,
    OUT_OF_GRID: 'The cell is out of the grid',
 });
 

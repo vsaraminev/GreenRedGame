@@ -10,6 +10,31 @@ const readlineInterface = readline.createInterface({
 });
 
 const start = async function () {
+   const { width, height } = await askGridInput();
+   for (let index = 0; index < height; index++) {
+      const numbers = await askZeroStateInput(width);
+      matrix.fillArray(numbers);
+   }
+   const { x1, y1, iterations } = await askCoordinatesInput(width, height);
+   const greenGenerations = matrix.iterateGrid(
+      iterations,
+      x1,
+      y1,
+      width,
+      height
+   );
+   console.log(`${OUTPUT_MESSAGE}${greenGenerations}`);
+
+   process.exit();
+};
+
+const ask = (questionText) => {
+   return new Promise((resolve, reject) => {
+      readlineInterface.question(questionText, (input) => resolve(input));
+   });
+};
+
+const askGridInput = async () => {
    let gridInput = await ask(QUESTIONS.GRID_SIZE);
    let verifyGridInput = utils.checkGridInput(gridInput);
    while (!verifyGridInput.result) {
@@ -18,30 +43,27 @@ const start = async function () {
       verifyGridInput = utils.checkGridInput(gridInput);
    }
 
-   const { width, heigh } = utils.parseGridInput(gridInput);
+   return utils.parseGridInput(gridInput);
+};
 
-   for (let index = 0; index < heigh; index++) {
-      let zeroStateInput = await ask(QUESTIONS.ZERO_STATE);
-      let verifyZeroStateInput = utils.checkZeroStateInput(
-         zeroStateInput,
-         width
-      );
-      while (!verifyZeroStateInput.result) {
-         console.log(verifyZeroStateInput.message);
-         zeroStateInput = await ask(QUESTIONS.ZERO_STATE);
-         verifyZeroStateInput = utils.checkZeroStateInput(
-            zeroStateInput,
-            width
-         );
-      }
-      const numbers = zeroStateInput.trim().split('').map(Number);
-      matrix.fillArray(numbers);
+const askZeroStateInput = async (width) => {
+   let zeroStateInput = await ask(QUESTIONS.ZERO_STATE);
+   let verifyZeroStateInput = utils.checkZeroStateInput(zeroStateInput, width);
+   while (!verifyZeroStateInput.result) {
+      console.log(verifyZeroStateInput.message);
+      zeroStateInput = await ask(QUESTIONS.ZERO_STATE);
+      verifyZeroStateInput = utils.checkZeroStateInput(zeroStateInput, width);
    }
+
+   return zeroStateInput.trim().split('').map(Number);
+};
+
+const askCoordinatesInput = async (width, height) => {
    let coordinatesInput = await ask(QUESTIONS.COORDINATES);
    let verifyCoordInput = utils.checkCoordinatesInput(
       coordinatesInput,
       width,
-      heigh
+      height
    );
    while (!verifyCoordInput.result) {
       console.log(verifyCoordInput.message);
@@ -49,27 +71,11 @@ const start = async function () {
       verifyCoordInput = utils.checkCoordinatesInput(
          coordinatesInput,
          width,
-         heigh
+         height
       );
    }
-   const { x1, y1, iterations } = utils.parseCoordInput(coordinatesInput);
-   const greenGenerations = matrix.iterateGrid(
-      iterations,
-      x1,
-      y1,
-      width,
-      heigh
-   );
-   console.log(`${OUTPUT_MESSAGE}${greenGenerations}`);
-
-   process.exit();
+   return utils.parseCoordInput(coordinatesInput);
 };
-
-function ask(questionText) {
-   return new Promise((resolve, reject) => {
-      readlineInterface.question(questionText, (input) => resolve(input));
-   });
-}
 
 module.exports = {
    start,

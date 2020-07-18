@@ -59,9 +59,9 @@ matrix.createNextGeneration = (cell, greens) => {
    }
 };
 
-matrix.iterateGrid = (iterations, x1, y1, width, heigh) => {
+matrix.iterateGrid = (iterations, x1, y1, width, height) => {
    let greenGenerations = 0;
-   let newMatrix = matrix.createEmptyMatrix(width, heigh);
+   let newMatrix = matrix.createEmptyMatrix(width, height);
    for (let index = 0; index < iterations; index++) {
       for (let row = 0; row < matrixArr.length; row++) {
          for (let column = 0; column < matrixArr[row].length; column++) {
@@ -87,7 +87,7 @@ matrix.iterateGrid = (iterations, x1, y1, width, heigh) => {
          }
       }
       matrixArr = newMatrix;
-      newMatrix = matrix.createEmptyMatrix(width, heigh);
+      newMatrix = matrix.createEmptyMatrix(width, height);
    }
 
    return greenGenerations;
