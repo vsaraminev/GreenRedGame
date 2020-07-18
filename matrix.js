@@ -59,7 +59,7 @@ matrix.createNextGeneration = (cell, greens) => {
    }
 };
 
-matrix.doSomething = (iterations, x1, y1, width, heigh) => {
+matrix.iterateGrid = (iterations, x1, y1, width, heigh) => {
    let greenGenerations = 0;
    let newMatrix = matrix.createEmptyMatrix(width, heigh);
    for (let index = 0; index < iterations; index++) {

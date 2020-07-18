@@ -53,7 +53,7 @@ const start = async function () {
       );
    }
    const { x1, y1, iterations } = utils.parseCoordInput(coordinatesInput);
-   const greenGenerations = matrix.doSomething(
+   const greenGenerations = matrix.iterateGrid(
       iterations,
       x1,
       y1,
