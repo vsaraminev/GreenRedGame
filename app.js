@@ -5,12 +5,20 @@ const readlineInterface = readline.createInterface({
 });
 const RED_CELL = 0;
 const GREEN_CELL = 1;
+const MAX_GRID_SIZE = 1000;
 let greenGenerations = 0;
 const questions = [
    'Size of the grid:',
    'Generation Zero State:',
    'Coordinates and number N:',
 ];
+
+const ERROR_MESSAGES = Object.freeze({
+   nan: 'The size of the grid should be numbers.Try again!',
+   maxGrid: `The grid size should be less then ${MAX_GRID_SIZE}`,
+   height: 'Heigh should be greated or equal to the width',
+   negative: 'Width and height should not be negative numbers',
+});
 
 const OUTPUT_MESSAGE = 'Expected result: ';
 
@@ -20,11 +28,36 @@ let newMatrix;
 
 start();
 
+function checkGridInput(input) {
+   const { width, heigh } = parseInput(input);
+   if (isNaN(width) || isNaN(heigh)) {
+      return { result: false, message: ERROR_MESSAGES.nan };
+   } else if (width < 0 || heigh < 0) {
+      return { result: false, message: ERROR_MESSAGES.negative };
+   } else if (width >= MAX_GRID_SIZE || heigh >= MAX_GRID_SIZE) {
+      return { result: false, message: ERROR_MESSAGES.maxGrid };
+   } else if (width > heigh) {
+      return { result: false, message: ERROR_MESSAGES.height };
+   }
+   return { result: true };
+}
+
+function parseInput(input) {
+   const gridArgs = input.split(',');
+   const width = parseInt(gridArgs[0]);
+   const heigh = parseInt(gridArgs[1]);
+   return { width, heigh };
+}
+
 async function start() {
-   const gridInput = await ask(questions[0]);
-   const gridArgs = gridInput.split(',');
-   const width = Number(gridArgs[0]);
-   const heigh = Number(gridArgs[1]);
+   let gridInput = await ask(questions[0]);
+   let verifyGridInput = checkGridInput(gridInput);
+   while (!verifyGridInput.result) {
+      console.log(verifyGridInput.message);
+      gridInput = await ask(questions[0]);
+      verifyGridInput = checkGridInput(gridInput);
+   }
+   const { width, heigh } = parseInput(gridInput);
    for (let index = 0; index < heigh; index++) {
       const result = await ask(questions[1]);
       const numbers = result.split('').map(Number);
