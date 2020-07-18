@@ -13,11 +13,15 @@ const questions = [
    'Coordinates and number N:',
 ];
 
+const allowedCharacters = [0, 1];
+
 const ERROR_MESSAGES = Object.freeze({
    nan: 'The size of the grid should be numbers.Try again!',
    maxGrid: `The grid size should be less then ${MAX_GRID_SIZE}`,
    height: 'Heigh should be greated or equal to the width',
    negative: 'Width and height should not be negative numbers',
+   onlyZeroOrOne: 'Allowed characters are only 0 and 1',
+   charactersCount: `The count of the characters should be equal to `,
 });
 
 const OUTPUT_MESSAGE = 'Expected result: ';
@@ -42,6 +46,20 @@ function checkGridInput(input) {
    return { result: true };
 }
 
+function containsOnlyOneOrZero(array1, array2) {
+   return array2.every((elem) => array1.includes(elem));
+}
+
+function checkZeroStateInput(input, width) {
+   const numbers = input.split('').map(Number);
+   if (numbers.length !== width) {
+      return { result: false, message: ERROR_MESSAGES.charactersCount };
+   } else if (!containsOnlyOneOrZero(allowedCharacters, numbers)) {
+      return { result: false, message: ERROR_MESSAGES.onlyZeroOrOne };
+   }
+   return { result: true };
+}
+
 function parseInput(input) {
    const gridArgs = input.split(',');
    const width = parseInt(gridArgs[0]);
@@ -58,9 +76,16 @@ async function start() {
       verifyGridInput = checkGridInput(gridInput);
    }
    const { width, heigh } = parseInput(gridInput);
+
    for (let index = 0; index < heigh; index++) {
-      const result = await ask(questions[1]);
-      const numbers = result.split('').map(Number);
+      let zeroStateInput = await ask(questions[1]);
+      let verifyZeroStateInput = checkZeroStateInput(zeroStateInput, width);
+      while (!verifyZeroStateInput.result) {
+         console.log(verifyZeroStateInput.message);
+         zeroStateInput = await ask(questions[1]);
+         verifyZeroStateInput = checkZeroStateInput(zeroStateInput, width);
+      }
+      const numbers = zeroStateInput.split('').map(Number);
       matrix.push(numbers);
    }
    newMatrix = createEmptyMatrix(width, heigh);
