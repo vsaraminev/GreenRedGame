@@ -19,9 +19,10 @@ const ERROR_MESSAGES = Object.freeze({
    nan: 'The size of the grid should be numbers.Try again!',
    maxGrid: `The grid size should be less then ${MAX_GRID_SIZE}`,
    height: 'Heigh should be greated or equal to the width',
-   negative: 'Width and height should not be negative numbers',
+   negative: 'Parameters should not be negative numbers',
    onlyZeroOrOne: 'Allowed characters are only 0 and 1',
    charactersCount: `The count of the characters should be equal to `,
+   outOfRange: 'The cell is out of the grid',
 });
 
 const OUTPUT_MESSAGE = 'Expected result: ';
@@ -32,8 +33,20 @@ let newMatrix;
 
 start();
 
+function checkCoordinatesInput(input, width, heigh) {
+   const { x1, y1, iterations } = parseCoordInput(input);
+   if (isNaN(x1) || isNaN(y1) || isNaN(iterations)) {
+      return { result: false, message: ERROR_MESSAGES.nan };
+   } else if (x1 < 0 || y1 < 0 || iterations < 0) {
+      return { result: false, message: ERROR_MESSAGES.negative };
+   } else if (x1 > width || y1 > heigh) {
+      return { result: false, message: ERROR_MESSAGES.outOfRange };
+   }
+   return { result: true };
+}
+
 function checkGridInput(input) {
-   const { width, heigh } = parseInput(input);
+   const { width, heigh } = parseGridInput(input);
    if (isNaN(width) || isNaN(heigh)) {
       return { result: false, message: ERROR_MESSAGES.nan };
    } else if (width < 0 || heigh < 0) {
@@ -51,7 +64,7 @@ function containsOnlyOneOrZero(array1, array2) {
 }
 
 function checkZeroStateInput(input, width) {
-   const numbers = input.split('').map(Number);
+   const numbers = input.split('').trim().map(Number);
    if (numbers.length !== width) {
       return { result: false, message: ERROR_MESSAGES.charactersCount };
    } else if (!containsOnlyOneOrZero(allowedCharacters, numbers)) {
@@ -60,11 +73,19 @@ function checkZeroStateInput(input, width) {
    return { result: true };
 }
 
-function parseInput(input) {
+function parseGridInput(input) {
    const gridArgs = input.split(',');
-   const width = parseInt(gridArgs[0]);
-   const heigh = parseInt(gridArgs[1]);
+   const width = parseInt(gridArgs[0].trim());
+   const heigh = parseInt(gridArgs[1].trim());
    return { width, heigh };
+}
+
+function parseCoordInput(input) {
+   const coordArgs = input.split(',');
+   const x1 = parseInt(coordArgs[0].trim());
+   const y1 = parseInt(coordArgs[1].trim());
+   const iterations = parseInt(coordArgs[2].trim());
+   return { x1, y1, iterations };
 }
 
 async function start() {
@@ -75,7 +96,7 @@ async function start() {
       gridInput = await ask(questions[0]);
       verifyGridInput = checkGridInput(gridInput);
    }
-   const { width, heigh } = parseInput(gridInput);
+   const { width, heigh } = parseGridInput(gridInput);
 
    for (let index = 0; index < heigh; index++) {
       let zeroStateInput = await ask(questions[1]);
@@ -89,12 +110,14 @@ async function start() {
       matrix.push(numbers);
    }
    newMatrix = createEmptyMatrix(width, heigh);
-   const coordinatesInput = await ask(questions[2]);
-   const coordArgs = coordinatesInput.split(',');
-   const x1 = Number(coordArgs[0]);
-   const y1 = Number(coordArgs[1]);
-   const iterations = Number(coordArgs[2]);
-
+   let coordinatesInput = await ask(questions[2]);
+   let verifyCoordInput = checkCoordinatesInput(coordinatesInput, width, heigh);
+   while (!verifyCoordInput.result) {
+      console.log(verifyCoordInput.message);
+      coordinatesInput = await ask(questions[2]);
+      verifyCoordInput = checkCoordinatesInput(coordinatesInput, width, heigh);
+   }
+   const { x1, y1, iterations } = parseCoordInput(coordinatesInput);
    for (let index = 0; index < iterations; index++) {
       for (let row = 0; row < matrix.length; row++) {
          for (let column = 0; column < matrix[row].length; column++) {
