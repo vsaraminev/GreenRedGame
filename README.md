@@ -2,12 +2,13 @@
 
 Green vs Red is a game played on a 2D grid that in theory can be infinite.
 
-RUNNING
+## RUNNING
 
-RUNNING COMMAND LINE
+### COMMAND LINE
+
 node app.js
 
-DESCRIPTION
+## DESCRIPTION
 
 Green vs Red is a game played on a 2D grid that in theory can be infinite(in our case we will assme that x <= y< 1000).
 
@@ -19,22 +20,21 @@ Rules that create the next generation:
 3. Each green cell surrounded by 0, 1, 4, 5, 7 or 8 green neighbours will become red in the next generation.
 4. A green cell will stay green in the next generation if it has either 2, 3 or 6 green neighbours.
 
-INPUT
-Example 1
-3, 3
-000
-111
-000
-1, 0, 10
+## INPUT
 
-# expected result: 5
+Example 1\
+3, 3\
+000\
+111\
+000\
+1, 0, 10\
+expected result: 5
 
-Example 2
-4, 4
-1001
-1111
-0100
-1010
-2, 2, 15
-
-# expected result: 14
+Example 2\
+4, 4\
+1001\
+1111\
+0100\
+1010\
+2, 2, 15\
+expected result: 14
